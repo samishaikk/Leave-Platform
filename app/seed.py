@@ -21,7 +21,7 @@ HOLIDAYS = [
     (date(2027, 8, 15), "Independence Day"),
 ]
 
-# (name, email, role, manager_email) - managers must come before their reports
+
 PEOPLE = [
     ("Meera Rao", "meera@example.com", Role.manager, None),
     ("Suresh Nair", "suresh@example.com", Role.manager, None),
