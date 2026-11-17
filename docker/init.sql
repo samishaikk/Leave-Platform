@@ -1,0 +1,1 @@
+CREATE DATABASE leave_test_db;
