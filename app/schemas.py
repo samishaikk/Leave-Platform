@@ -79,3 +79,25 @@ class LeaveDecision(BaseModel):
         if self.decision == "rejected" and not (self.comment and self.comment.strip()):
             raise ValueError("a comment is required when rejecting")
         return self
+
+
+class AttendanceOut(BaseModel):
+    id: int
+    employee_id: int
+    work_date: date
+    check_in: datetime
+    check_out: datetime | None
+    hours_worked: float | None
+
+
+class HolidayOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    holiday_date: date
+    name: str
+
+
+class HolidaySyncOut(BaseModel):
+    year: int
+    fetched: int
+    added: int
