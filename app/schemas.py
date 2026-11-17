@@ -101,3 +101,38 @@ class HolidaySyncOut(BaseModel):
     year: int
     fetched: int
     added: int
+
+
+class TeamBalanceOut(BaseModel):
+    employee_id: int
+    employee_name: str
+    leave_type: str
+    annual_quota: int | None
+    approved_days: int
+    pending_days: int
+    remaining_days: int | None
+
+
+class OverlapOut(BaseModel):
+    request_a: int
+    employee_a: str
+    request_b: int
+    employee_b: str
+    overlap_start: date
+    overlap_end: date
+
+
+class CalendarEntryOut(BaseModel):
+    day: date
+    employee_id: int
+    employee_name: str
+    leave_type: str
+
+
+class MonthlyAttendanceOut(BaseModel):
+    employee_id: int
+    employee_name: str
+    days_present: int
+    total_hours: float
+    avg_hours_per_day: float | None
+    hours_rank: int
