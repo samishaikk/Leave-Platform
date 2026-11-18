@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Leave Platform{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; color: #1f2933; background: #f5f7fa; }
+    header { background: #1f3a5f; color: #fff; padding: 12px 24px; display: flex;
+             justify-content: space-between; align-items: center; }
+    header nav { display: flex; gap: 16px; align-items: center; }
+    header a { color: #fff; text-decoration: none; }
+    main { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    section { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px;
+              box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e4e7eb; vertical-align: top; }
+    label { display: block; margin-top: 10px; font-weight: 600; }
+    input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px; }
+    button { padding: 8px 14px; cursor: pointer; border: 0; border-radius: 4px;
+             background: #2f6fed; color: #fff; }
+    button.danger { background: #c0392b; }
+    button.success { background: #2e8b57; }
+    form.inline { display: inline; }
+    .flash { padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+    .flash.ok { background: #e3f6ea; color: #1b5e37; }
+    .flash.err { background: #fde8e6; color: #8a1f17; }
+    .badge { padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+    .badge.pending { background: #fff3cd; }
+    .badge.approved { background: #d4edda; }
+    .badge.rejected { background: #f8d7da; }
+    .row-actions { display: flex; gap: 8px; align-items: center; }
+    .row-actions input { margin: 0; }
+  </style>
+</head>
+<body>
+<header>
+  <strong>Leave &amp; Attendance</strong>
+  {% if user %}
+  <nav>
+    <a href="/" data-testid="nav-dashboard">Dashboard</a>
+    {% if user.role.value == "manager" %}
+    <a href="/approvals" data-testid="nav-approvals">Approvals</a>
+    {% endif %}
+    <form method="post" action="/logout" class="inline">
+      <button type="submit" data-testid="logout">Log out</button>
+    </form>
+  </nav>
+  {% endif %}
+</header>
+<main>
+  {% if msg %}<div class="flash ok" role="status" data-testid="flash-success">{{ msg }}</div>{% endif %}
+  {% if error %}<div class="flash err" role="alert" data-testid="flash-error">{{ error }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

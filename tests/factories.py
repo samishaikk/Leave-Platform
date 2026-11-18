@@ -1,5 +1,9 @@
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
 from itertools import count
+
+import bcrypt
+
 from app.models import (
     Attendance,
     Employee,
@@ -9,11 +13,18 @@ from app.models import (
     LeaveType,
     Role,
 )
-from app.security import hash_password
 
 _counter = count(1)
 
 
+@lru_cache(maxsize=None)
+def _fast_hash(password: str) -> str:
+    """Cheap bcrypt hash (4 rounds) so tests stay fast. Test data only."""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(rounds=4)).decode()
+
+
+# Factories commit (not just flush) so that a rollback inside the app code
+# cannot undo the data a test set up.
 def make_employee(
     db, name="Test User", role=Role.employee, manager=None, password=None, email=None
 ):
@@ -21,13 +32,12 @@ def make_employee(
     employee = Employee(
         name=name,
         email=email or f"user{n}@example.com",
-        # hashing is slow, so only do it when a test needs to log in
-        password_hash=hash_password(password) if password else "not-a-real-hash",
+        password_hash=_fast_hash(password) if password else "not-a-real-hash",
         role=role,
         manager_id=manager.id if manager else None,
     )
     db.add(employee)
-    db.flush()
+    db.commit()
     return employee
 
 
@@ -37,7 +47,7 @@ def make_leave_types(db) -> dict[str, LeaveType]:
         leave_type = LeaveType(name=name, annual_quota=quota)
         db.add(leave_type)
         types[name] = leave_type
-    db.flush()
+    db.commit()
     return types
 
 
@@ -61,7 +71,7 @@ def make_leave_request(
         reason=reason,
     )
     db.add(leave_request)
-    db.flush()
+    db.commit()
     return leave_request
 
 
@@ -76,12 +86,12 @@ def make_attendance(db, employee, work_date: date, hours: float | None = 8):
         check_out=None if hours is None else check_in + timedelta(hours=hours),
     )
     db.add(record)
-    db.flush()
+    db.commit()
     return record
 
 
 def make_holiday(db, holiday_date: date, name="Test Holiday"):
     holiday = Holiday(holiday_date=holiday_date, name=name)
     db.add(holiday)
-    db.flush()
+    db.commit()
     return holiday

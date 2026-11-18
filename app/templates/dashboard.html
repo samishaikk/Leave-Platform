@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 data-testid="greeting">Hello, {{ user.name }}</h1>
+
+<section>
+  <h2>My leave balance ({{ today.year }})</h2>
+  <table data-testid="balance-table">
+    <thead>
+      <tr><th>Type</th><th>Quota</th><th>Approved</th><th>Pending</th><th>Remaining</th></tr>
+    </thead>
+    <tbody>
+      {% for b in balances %}
+      <tr data-testid="balance-row-{{ b.leave_type|lower }}">
+        <td>{{ b.leave_type }}</td>
+        <td>{{ "unlimited" if b.annual_quota is none else b.annual_quota }}</td>
+        <td>{{ b.approved_days }}</td>
+        <td>{{ b.pending_days }}</td>
+        <td data-testid="remaining">{{ "unlimited" if b.remaining_days is none else b.remaining_days }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Apply for leave</h2>
+  <form method="post" action="/leave" data-testid="apply-form">
+    <label for="leave_type_id">Leave type</label>
+    <select id="leave_type_id" name="leave_type_id" required data-testid="leave-type">
+      {% for lt in leave_types %}
+      <option value="{{ lt.id }}">{{ lt.name }}</option>
+      {% endfor %}
+    </select>
+    <label for="start_date">Start date</label>
+    <input id="start_date" name="start_date" type="date" required data-testid="start-date">
+    <label for="end_date">End date</label>
+    <input id="end_date" name="end_date" type="date" required data-testid="end-date">
+    <label for="reason">Reason (optional)</label>
+    <textarea id="reason" name="reason" rows="2" maxlength="500" data-testid="reason"></textarea>
+    <p><button type="submit" data-testid="apply-submit">Submit request</button></p>
+  </form>
+</section>
+
+<section>
+  <h2>My requests</h2>
+  <table data-testid="requests-table">
+    <thead>
+      <tr><th>#</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th>Manager comment</th></tr>
+    </thead>
+    <tbody>
+      {% for r in requests %}
+      <tr data-testid="request-row" data-request-id="{{ r.id }}">
+        <td>{{ r.id }}</td>
+        <td>{{ r.leave_type }}</td>
+        <td>{{ r.start_date }} to {{ r.end_date }}</td>
+        <td>{{ r.days }}</td>
+        <td><span class="badge {{ r.status.value }}" data-testid="request-status">{{ r.status.value }}</span></td>
+        <td>{{ r.decision_comment or "" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" data-testid="no-requests">No requests yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

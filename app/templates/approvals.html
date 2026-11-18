@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Approvals{% endblock %}
+{% block content %}
+<h1>Pending approvals</h1>
+<section>
+  <table data-testid="approvals-table">
+    <thead>
+      <tr><th>#</th><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Reason</th><th>Decision</th></tr>
+    </thead>
+    <tbody>
+      {% for r in requests %}
+      <tr data-testid="approval-row" data-request-id="{{ r.id }}">
+        <td>{{ r.id }}</td>
+        <td>{{ r.employee_name }}</td>
+        <td>{{ r.leave_type }}</td>
+        <td>{{ r.start_date }} to {{ r.end_date }}</td>
+        <td>{{ r.days }}</td>
+        <td>{{ r.reason or "" }}</td>
+        <td>
+          <form method="post" action="/approvals/{{ r.id }}" class="row-actions">
+            <input name="comment" placeholder="Comment (needed to reject)" data-testid="decision-comment">
+            <button type="submit" name="decision" value="approved" class="success" data-testid="approve-button">Approve</button>
+            <button type="submit" name="decision" value="rejected" class="danger" data-testid="reject-button">Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" data-testid="no-pending">No pending requests.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
